@@ -1,0 +1,20 @@
+################### requiremnets.txt ##################
+beautifulsoup4
+requests
+fake-useragent
+numpy
+pandas
+transformers
+torch
+langchain
+faiss-cpu
+sentence-transformers
+streamlit
+flask
+flask-cors
+matplotlib
+seaborn
+gtts
+translate
+deep_translator
+python-dotenv
