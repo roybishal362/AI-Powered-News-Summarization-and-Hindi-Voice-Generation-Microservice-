@@ -71,16 +71,17 @@ def main():
             with st.spinner("Fetching and analyzing news articles... This may take a minute."):
                 try:
                     # Make API call
-                    API_URL = os.environ.get("API_URL", "http://localhost:5000")
+                    #API_URL = os.environ.get("API_URL", "http://localhost:5000")
                     # response = requests.post(
                     #     "http://localhost:5000/api/news-analysis",
                     #     json={"company_name": company_name},
                     #     timeout=600  # Increased timeout for complex analysis
                     # )
+                    API_URL = os.environ.get("API_URL", "")
                     response = requests.post(
-                        f"{API_URL}/api/news-analysis",
+                        "/api/news-analysis",  # Use relative URL
                         json={"company_name": company_name},
-                        timeout=600
+                        timeout=720
                     )
                     if response.status_code == 200:
                         data = response.json()

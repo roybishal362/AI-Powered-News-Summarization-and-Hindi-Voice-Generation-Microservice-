@@ -18,3 +18,4 @@ gtts
 translate
 deep_translator
 python-dotenv
+python-jose
