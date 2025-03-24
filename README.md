@@ -33,8 +33,8 @@ This is a simple yet powerful tool that extracts news about a company, analyzes 
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd <repository-directory>
+git clone https://github.com/roybishal362/news_summarization_app.git
+cd news_summarization_app
 ```
 
 ### 3️⃣ Set Up a Virtual Environment
