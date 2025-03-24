@@ -1,5 +1,6 @@
 ############ Api.py #################
 import os
+import argparse
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -20,7 +21,10 @@ from utils import (
 load_dotenv()
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
@@ -116,5 +120,15 @@ def analyze_news():
         }), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    parser = argparse.ArgumentParser(description='Start the Flask API server')
+    parser.add_argument('--port', type=int, default=5000, help='Port to run the API server on')
+    parser.add_argument('--host', type=str, default='0.0.0.0', help='Host to run the API server on')
+    
+    args = parser.parse_args()
+    
+    # Get port from environment variable if available, otherwise use the argument
+    port = int(os.environ.get("FLASK_PORT", args.port))
+    host = os.environ.get("FLASK_HOST", args.host)
+    
+    logger.info(f"Starting API server on {host}:{port}")
+    app.run(debug=False, host=host, port=port)

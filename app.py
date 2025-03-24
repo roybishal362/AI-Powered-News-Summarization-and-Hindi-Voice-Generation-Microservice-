@@ -34,6 +34,19 @@ def get_download_link(json_data, company_name):
     href = f'<a href="data:file/json;base64,{b64}" download="{filename}">Download JSON Results</a>'
     return href
 
+def get_api_url():
+    """Get the API URL based on the environment"""
+    # Determine the backend API URL
+    flask_port = os.environ.get("FLASK_PORT", "5000")
+    
+    # Check if running on Hugging Face Spaces
+    if os.environ.get("SPACE_ID"):
+        # For Hugging Face Spaces, use the local URL since everything runs in the same container
+        return f"http://localhost:{flask_port}"
+    
+    # For local development, use the API_URL environment variable if set
+    return os.environ.get("API_URL", f"http://localhost:{flask_port}")
+
 def main():
     st.title("Company News Sentiment Analyzer")
     
@@ -70,19 +83,18 @@ def main():
         if company_name:
             with st.spinner("Fetching and analyzing news articles... This may take a minute."):
                 try:
+                    # Get API URL
+                    API_URL = get_api_url()
+                    
+                    st.info(f"Connecting to API at {API_URL}")
+                    
                     # Make API call
-                    #API_URL = os.environ.get("API_URL", "http://localhost:5000")
-                    # response = requests.post(
-                    #     "http://localhost:5000/api/news-analysis",
-                    #     json={"company_name": company_name},
-                    #     timeout=600  # Increased timeout for complex analysis
-                    # )
-                    API_URL = os.environ.get("API_URL", "")
                     response = requests.post(
-                        "/api/news-analysis",  # Use relative URL
+                        f"{API_URL}/api/news-analysis",
                         json={"company_name": company_name},
-                        timeout=720
+                        timeout=720  # Increased timeout for complex analysis
                     )
+                    
                     if response.status_code == 200:
                         data = response.json()
                         display_results(data)
@@ -91,10 +103,10 @@ def main():
                         st.markdown(get_download_link(data, company_name), unsafe_allow_html=True)
                     else:
                         st.error(f"Error: {response.status_code} - {response.text}")
-                        st.info("If you're seeing a connection error, please ensure the backend API is running on port 5000.")
+                        st.info("If you're seeing a connection error, please ensure the backend API is running.")
                 except Exception as e:
                     st.error(f"Error: {str(e)}")
-                    st.info("If you're seeing a connection error, please ensure the backend API is running on port 5000.")
+                    st.info("If you're seeing a connection error, please ensure the backend API is running.")
         else:
             st.warning("Please enter or select a company name.")
 

@@ -1,4 +1,3 @@
-########## utilts.py ####################
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -8,7 +7,7 @@ import time
 import random
 import numpy as np
 from transformers import pipeline
-from langchain.llms import Ollama
+from langchain_community.llms import HuggingFaceHub
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 import json
@@ -323,21 +322,54 @@ def analyze_sentiment(text):
         logger.error(f"Error in sentiment analysis: {e}")
         return "Neutral"  # Default to neutral in case of errors
 
-# LLM Functions
 def setup_llm():
-    """Set up and return the LLM."""
+    """Set up and return the HuggingFace LLM with better fallback options."""
     try:
-        return Ollama(model="llama3")
+        # Set API token from environment variable
+        huggingface_api_token = os.environ.get("HUGGINGFACE_API_TOKEN")
+        
+        if not huggingface_api_token:
+            logger.warning("HUGGINGFACE_API_TOKEN not found in environment variables.")
+            # Try to get token another way for Hugging Face Spaces
+            if os.path.exists('/root/.huggingface/token'):
+                with open('/root/.huggingface/token', 'r') as f:
+                    huggingface_api_token = f.read().strip()
+                    logger.info("Found token in /root/.huggingface/token")
+        
+        # Try a sequence of models in order of preference
+        models_to_try = [
+            "meta-llama/Meta-Llama-3-8B-Instruct",  # First choice
+            "google/flan-t5-large",                # Second choice
+            "google/flan-t5-base",                 # Third choice
+            "facebook/bart-large-cnn"              # Last resort
+        ]
+        
+        last_exception = None
+        for model in models_to_try:
+            try:
+                logger.info(f"Attempting to initialize model: {model}")
+                llm = HuggingFaceHub(
+                    repo_id=model,
+                    huggingfacehub_api_token=huggingface_api_token,
+                    model_kwargs={"temperature": 0.7, "max_length": 512}
+                )
+                # Test with a simple prompt to verify it works
+                _ = llm("Hello")
+                logger.info(f"Successfully initialized model: {model}")
+                return llm
+            except Exception as e:
+                logger.warning(f"Failed to initialize model {model}: {e}")
+                last_exception = e
+                continue
+        
+        # If we get here, all models failed
+        raise Exception(f"Failed to initialize any LLM models. Last error: {last_exception}")
+    
     except Exception as e:
-        logger.error(f"Error setting up Ollama LLM: {e}")
-        # Fallback to use HuggingFace model
-        try:
-            from langchain.llms import HuggingFaceHub
-            return HuggingFaceHub(repo_id="google/flan-t5-base", model_kwargs={"temperature": 0.5, "max_length": 512})
-        except Exception as e2:
-            logger.error(f"Error setting up fallback LLM: {e2}")
-            raise Exception("Failed to initialize any LLM. Please check your configuration.")
-
+        logger.error(f"Error in setup_llm: {e}")
+        raise Exception(f"Failed to initialize LLM: {e}")
+    
+    
 def extract_key_topics(article, llm):
     """Extract key topics from an article."""
     prompt_template = """
