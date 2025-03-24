@@ -159,7 +159,11 @@ This app is deployed on Hugging Face Spaces! Check it out here: **https://huggin
 
 ---
 
-## ❤️ Contributing
-
-Found a bug? Want to add a feature? Feel free to open an issue or submit a pull request! 🚀
+## ❤️ UI
+![Alt Text](a.png)
+![Alt Text](b.png)
+![Alt Text](c.png)
+![Alt Text](d.png)
+![Alt Text](e.png)
+![Alt Text](f.png)
 
