@@ -155,7 +155,7 @@ The backend provides a RESTful API with the following endpoints:
 
 ## 🚀 Deployment
 
-This app is deployed on Hugging Face Spaces! Check it out here: **[Insert Deployment URL]**
+This app is deployed on Hugging Face Spaces! Check it out here: **https://huggingface.co/spaces/roybishal943/NewsSummarization**
 
 ---
 
