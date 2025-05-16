@@ -1,4 +1,4 @@
-# News Summarization & Hindi Text-to-Speech App 🚀
+# AI-Powered News Summarization and Hindi Voice Generation Microservice 
 
 This is a simple yet powerful tool that extracts news about a company, analyzes its sentiment, compares multiple articles, and even reads out the key takeaways in Hindi! 📢📰
 
